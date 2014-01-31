@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include <QtMultimedia/QSound>
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QTextStream>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -45,16 +47,14 @@ void MainWindow::on_textConvertButton_clicked()
 {
     QString text = ui->normalTextEdit->toPlainText();
     QString morse = convertToMorse(text);
-    ui->morseTextEdit->clear();
-    ui->morseTextEdit->appendPlainText(morse);
+    ui->morseTextEdit->setPlainText(morse);
 }
 
 void MainWindow::on_morseConvertButton_clicked()
 {
     QString morse = ui->morseTextEdit->toPlainText();
     QString text = convertToText(morse);
-    ui->normalTextEdit->clear();
-    ui->normalTextEdit->appendPlainText(text);
+    ui->normalTextEdit->setPlainText(text);
 }
 
 QString MainWindow::convertToMorse(QString text)
@@ -189,4 +189,93 @@ QString MainWindow::convertToText(QString morse)
 
     text = text.simplified();
     return text;
+}
+
+void MainWindow::on_actionSave_triggered()
+{
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"), QString(), tr("Text Files (*.txt)"));
+
+    if (!fileName.isEmpty())
+    {
+        QFile file(fileName);
+        if (!file.open(QIODevice::WriteOnly))
+        {
+            QMessageBox::critical(this, tr("Error"), tr("Could not save file"));
+            return;
+        }
+        else
+        {
+            QTextStream stream(&file);
+            stream << ui->normalTextEdit->toPlainText();
+            stream.flush();
+            file.close();
+        }
+    }
+}
+
+void MainWindow::on_actionOpen_triggered()
+{
+   QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), QString(), tr("Text Files (*.txt)"));
+
+   if (!fileName.isEmpty())
+   {
+        QFile file(fileName);
+        if (!file.open(QIODevice::ReadOnly))
+        {
+            QMessageBox::critical(this, tr("Error"), tr("Could not open file"));
+            return;
+        }
+
+        QTextStream in(&file);
+        ui->normalTextEdit->setPlainText(in.readAll());
+        file.close();
+   }
+}
+
+void MainWindow::on_actionSave_Morse_Code_triggered()
+{
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"), QString(), tr("Text Files (*.txt)"));
+
+    if (!fileName.isEmpty())
+    {
+        QFile file(fileName);
+        if (!file.open(QIODevice::WriteOnly))
+        {
+            QMessageBox::critical(this, tr("Error"), tr("Could not save file"));
+            return;
+        }
+        else
+        {
+            QTextStream stream(&file);
+            stream << ui->morseTextEdit->toPlainText();
+            stream.flush();
+            file.close();
+        }
+    }
+}
+
+void MainWindow::on_actionOpen_Morse_Code_triggered()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), QString(), tr("Text Files (*.txt)"));
+
+    if (!fileName.isEmpty())
+    {
+         QFile file(fileName);
+         if (!file.open(QIODevice::ReadOnly))
+         {
+             QMessageBox::critical(this, tr("Error"), tr("Could not open file"));
+             return;
+         }
+
+         QTextStream in(&file);
+         ui->morseTextEdit->setPlainText(in.readAll());
+         file.close();
+    }
+
+}
+
+
+void MainWindow::on_actionExit_triggered()
+{
+    qApp->quit();
 }
