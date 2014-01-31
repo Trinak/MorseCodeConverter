@@ -1,11 +1,39 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <QtMultimedia/QSound>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    morseToText[".-"] = 'A';
+    morseToText["-..."] = 'B';
+    morseToText["-.-."] = 'C';
+    morseToText["-.."] = 'D';
+    morseToText["."] = 'E';
+    morseToText["..-."] = 'F';
+    morseToText["--."] = 'G';
+    morseToText["...."] = 'H';
+    morseToText[".."] = 'I';
+    morseToText[".---"] = 'J';
+    morseToText["-.-"] = 'K';
+    morseToText[".-.."] = 'L';
+    morseToText["--"] = 'M';
+    morseToText["-."] = 'N';
+    morseToText["---"] = 'O';
+    morseToText[".--."] = 'P';
+    morseToText["--.-"] = 'Q';
+    morseToText[".-."] = 'R';
+    morseToText["..."] = 'S';
+    morseToText["-"] = 'T';
+    morseToText["..-"] = 'U';
+    morseToText["...-"] = 'V';
+    morseToText[".--"] = 'W';
+    morseToText["-..-"] = 'X';
+    morseToText["-.--"] = 'Y';
+    morseToText["--.."] = 'Z';
 }
 
 MainWindow::~MainWindow()
@@ -21,9 +49,18 @@ void MainWindow::on_textConvertButton_clicked()
     ui->morseTextEdit->appendPlainText(morse);
 }
 
+void MainWindow::on_morseConvertButton_clicked()
+{
+    QString morse = ui->morseTextEdit->toPlainText();
+    QString text = convertToText(morse);
+    ui->normalTextEdit->clear();
+    ui->normalTextEdit->appendPlainText(text);
+}
+
 QString MainWindow::convertToMorse(QString text)
 {
     QString morse;
+    text = text.toUpper();
 
     for (QChar &i: text)
     {
@@ -32,114 +69,145 @@ QString MainWindow::convertToMorse(QString text)
         switch(letter)
         {
         case 'A':
-        case 'a':
             morse += ".-";
             break;
         case 'B':
-        case 'b':
             morse += "-...";
             break;
         case 'C':
-        case 'c':
             morse += "-.-.";
             break;
         case 'D':
-        case 'd':
             morse += "-..";
             break;
         case 'E':
-        case 'e':
             morse += ".";
             break;
         case 'F':
-        case 'f':
             morse += "..-.";
             break;
         case 'G':
-        case 'g':
             morse += "--.";
             break;
         case 'H':
-        case 'h':
             morse += "....";
             break;
         case 'I':
-        case 'i':
             morse += "..";
             break;
         case 'J':
-        case 'j':
             morse += ".---";
             break;
         case 'K':
-        case 'k':
             morse += "-.-";
             break;
         case 'L':
-        case 'l':
             morse += ".-..";
             break;
         case 'M':
-        case 'm':
             morse += "--";
             break;
         case 'N':
-        case 'n':
             morse += "-.";
             break;
         case 'O':
-        case 'o':
             morse += "---";
             break;
         case 'P':
-        case 'p':
             morse += ".--.";
             break;
         case 'Q':
-        case 'q':
             morse += "--.-";
             break;
         case 'R':
-        case 'r':
             morse += ".-.";
             break;
         case 'S':
-        case 's':
             morse += "...";
             break;
         case 'T':
-        case 't':
             morse += "-";
             break;
         case 'U':
-        case 'u':
             morse += "..-";
             break;
         case 'V':
-        case 'v':
             morse += "...-";
             break;
         case 'W':
-        case 'w':
             morse += ".--";
             break;
         case 'X':
-        case 'x':
             morse += "-..-";
             break;
         case 'Y':
-        case 'y':
             morse += "-.--";
             break;
         case 'Z':
-        case 'z':
             morse += "--..";
             break;
         case ' ':
+            morse += "      ";
             break;
         }
         morse += " ";
     }
 
     return morse;
+}
+
+QString MainWindow::convertToText(QString morse)
+{
+    QString text;
+    QString letter;
+
+    for (QChar &i : morse)
+    {
+        if (!i.isSpace())
+        {
+            letter += i;
+        }
+        else
+        {
+            if (letter.size() >= 1)
+            {
+                text += morseToText[letter];
+                letter = "";
+            }
+            else
+            {
+                text += " ";
+            }
+        }
+    }
+
+    if (letter.size() >= 1)
+    {
+        text += morseToText[letter];
+        letter = "";
+    }
+
+    text = text.simplified();
+    return text;
+}
+
+void MainWindow::on_hearMorseButton_clicked()
+{
+    QString morse = ui->morseTextEdit->toPlainText();
+
+    for (QChar &i : morse)
+    {
+        char dot = i.toLatin1();
+        switch(dot)
+        {
+        case '.':
+            QSound::play("beep.wav");
+            break;
+        case '-':
+            QSound::play("long.wav");
+            break;
+        case ' ':
+            break;
+        }
+    }
 }
