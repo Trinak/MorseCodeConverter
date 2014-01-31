@@ -190,24 +190,3 @@ QString MainWindow::convertToText(QString morse)
     text = text.simplified();
     return text;
 }
-
-void MainWindow::on_hearMorseButton_clicked()
-{
-    QString morse = ui->morseTextEdit->toPlainText();
-
-    for (QChar &i : morse)
-    {
-        char dot = i.toLatin1();
-        switch(dot)
-        {
-        case '.':
-            QSound::play("beep.wav");
-            break;
-        case '-':
-            QSound::play("long.wav");
-            break;
-        case ' ':
-            break;
-        }
-    }
-}

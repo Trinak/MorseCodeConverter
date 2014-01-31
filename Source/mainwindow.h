@@ -18,7 +18,6 @@ public:
 private slots:
     void on_textConvertButton_clicked();
     void on_morseConvertButton_clicked();
-    void on_hearMorseButton_clicked();
 
 private:
     QString convertToMorse(QString text);
