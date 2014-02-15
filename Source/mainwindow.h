@@ -18,15 +18,10 @@ public:
 private slots:
     void on_textConvertButton_clicked();
     void on_morseConvertButton_clicked();
-
     void on_actionSave_triggered();
-
     void on_actionOpen_triggered();
-
     void on_actionOpen_Morse_Code_triggered();
-
     void on_actionSave_Morse_Code_triggered();
-
     void on_actionExit_triggered();
 
 private:
